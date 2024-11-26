@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shared Folder Files</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/shared_folder.css') }}"
+    />
+  </head>
+  <body>
+    <div class="shared-container">
+      <h1>Files in the Shared Folder</h1>
+
+      {% if items %}
+      <ul class="file-list">
+        {% for item in items %}
+        <li>
+          <img
+            src="{{ url_for('static', filename='icons/folder.png') if item.type == 'folder' else url_for('static', filename='icons/file.png') }}"
+            alt="{{ item.type }} icon"
+            class="icon"
+          />
+          {{ item.name }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>{{ message or "No files found in the shared folder." }}</p>
+      {% endif %}
+    </div>
+  </body>
+</html>

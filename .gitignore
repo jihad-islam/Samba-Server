@@ -1,0 +1,25 @@
+# Ignore virtual environment directories
+venv/
+.env/
+env/
+__pycache__/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Ignore common IDE/editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore package manager lock files (optional)
+Pipfile.lock
+poetry.lock

@@ -1,0 +1,109 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #1c1c1c; /* Dark background */
+    color: #ecf0f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Container for Shared Folder Files */
+.shared-container {
+    background-color: rgba(50, 50, 50, 0.85); /* Darker background with transparency */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    width: 85%;
+    max-width: 800px;
+    text-align: center;
+    position: relative;
+}
+
+/* Heading */
+h1 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #e74c3c; /* Red heading */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* File List */
+.file-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Grid layout for items */
+    gap: 20px;
+}
+
+/* Style for each file/folder item */
+.file-list li {
+    font-size: 18px;
+    margin: 10px 0;
+    padding: 15px;
+    background-color: #34495e; /* Lighter gray for file/folder items */
+    border-radius: 15px;
+    color: #ecf0f1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effect for file/folder items */
+.file-list li:hover {
+    background-color: #e74c3c; /* Red hover effect */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Glowing effect on hover */
+}
+
+/* Icon Styling */
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+/* Empty Message Styling */
+p {
+    font-size: 16px;
+    color: #f39c12; /* Yellow for no files found message */
+    margin-top: 20px;
+}
+
+/* Subtle Border and Shadow for List Items */
+.file-list li {
+    border: 1px solid #3c3c3c; /* Darker border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.file-list li:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Stronger shadow on hover */
+    transform: translateY(-3px); /* Floating effect */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .shared-container {
+        width: 90%;
+    }
+    .file-list {
+        grid-template-columns: 1fr; /* Stack items in a single column on smaller screens */
+    }
+}
