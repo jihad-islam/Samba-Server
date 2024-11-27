@@ -4,31 +4,130 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shared Folder Files</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/shared_folder.css') }}"
-    />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI Plugin -->
+    <script>
+      tailwind.config = {
+        plugins: [require("daisyui")],
+      };
+    </script>
   </head>
-  <body>
-    <div class="shared-container">
-      <h1>Files in the Shared Folder</h1>
+  <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
+    <!-- Banner Section -->
+    <div
+      class="banner w-full bg-gray-800 shadow-lg flex justify-between items-center px-6 py-4"
+    >
+      <!-- Left Section with Username -->
+      <div class="text-lg font-medium">
+        Logged in as: <span class="text-blue-400">{{ username }}</span>
+      </div>
 
-      {% if items %}
-      <ul class="file-list">
-        {% for item in items %}
-        <li>
-          <img
-            src="{{ url_for('static', filename='icons/folder.png') if item.type == 'folder' else url_for('static', filename='icons/file.png') }}"
-            alt="{{ item.type }} icon"
-            class="icon"
-          />
-          {{ item.name }}
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>{{ message or "No files found in the shared folder." }}</p>
-      {% endif %}
+      <!-- Title -->
+      <h2 class="text-xl font-semibold text-white">
+        Files in the Shared Folder
+      </h2>
+
+      <!-- Right Section with Icons -->
+      <div class="flex items-center gap-4">
+        <!-- Upload Icon using DaisyUI Button -->
+        <label
+          for="uploadFile"
+          class="btn btn-primary btn-circle text-white"
+          title="Upload File"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4m0 0l-4 4m4-4v12"
+            />
+          </svg>
+        </label>
+        <input
+          type="file"
+          id="uploadFile"
+          style="display: none"
+          onchange="handleFileUpload(event)"
+        />
+
+        <!-- Logout Button -->
+        <button
+          id="logoutButton"
+          class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition"
+        >
+          Logout
+        </button>
+      </div>
     </div>
+
+    <!-- Shared Folder Files Section -->
+    <div class="container mx-auto mt-20">
+      <div class="p-6 bg-gray-800 rounded-lg shadow-md">
+        <h1 class="text-2xl font-semibold mb-4 text-center text-blue-400">
+          Files in the Shared Folder
+        </h1>
+
+        <!-- Upload Status Message -->
+        <div id="uploadMessage" class="text-center mb-4"></div>
+        <!-- Add this div -->
+
+        <!-- File List -->
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% if items %} {% for item in items %}
+          <li
+            class="bg-gray-700 p-6 rounded-lg shadow hover:shadow-lg hover:scale-105 transition flex items-center justify-between"
+          >
+            <!-- Icon and File/Folder Name -->
+            <div class="flex items-center gap-4">
+              <img
+                src="{{ url_for('static', filename='icons/folder.png') if item.type == 'folder' else url_for('static', filename='icons/file.png') }}"
+                alt="{{ item.type }} icon"
+                class="h-10 w-10"
+              />
+              <span class="text-lg font-medium truncate">{{ item.name }}</span>
+            </div>
+
+            {% if item.type == 'file' %}
+            <!-- Download Button using DaisyUI Button -->
+            <button
+              onclick="handleDownload('{{ item.name }}')"
+              class="btn btn-success btn-outline btn-circle text-white"
+              title="Download File"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4m0 0l-4 4m4-4v12"
+                />
+              </svg>
+            </button>
+            {% endif %}
+          </li>
+          {% endfor %} {% else %}
+          <p class="text-center text-yellow-400">
+            {{ message or "No files found in the shared folder." }}
+          </p>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
   </body>
 </html>
