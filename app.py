@@ -1,12 +1,21 @@
 import subprocess
 import os
+import socket
 from flask import Flask, request, jsonify, render_template, send_file, session, redirect, url_for
+from dotenv import load_dotenv
+
+# Load environment variables from a .env file (if needed)
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management (use a secure key in production)
 
+# Dynamically determine the Samba server's IP address
+def get_server_ip():
+    return socket.gethostbyname(socket.gethostname())
+
 # Shared folder path on your Samba server
-SHARED_FOLDER_PATH = "/home/sambauser/shared_folder"  # Update with your actual local Samba folder path
+SHARED_FOLDER_PATH = "/home/sambauser/shared_folder"  # Update with your actual Samba shared folder path
 
 @app.route('/')
 def home():
@@ -19,9 +28,14 @@ def login():
     data = request.json
     username = data['username']
     password = data['password']
+    
+    # Get the current IP address of the Samba server
+    server_ip = get_server_ip()
+
     try:
+        # Authenticate using smbclient
         command = [
-            'smbclient', f"//192.168.0.104/shared_folder", '-U', f"{username}%{password}", '-c', 'dir'
+            'smbclient', f"//{server_ip}/shared_folder", '-U', f"{username}%{password}", '-c', 'dir'
         ]
         result = subprocess.run(command, capture_output=True, text=True)
 
@@ -39,8 +53,11 @@ def shared_folders():
         return redirect(url_for('home'))
     
     username = session['username']
+    server_ip = get_server_ip()
+
     try:
-        command = ['/usr/bin/smbclient', f"//192.168.0.104/shared_folder", '-U', f'{session["username"]}%jihad', '-c', 'dir']
+        # List files in the shared folder using smbclient
+        command = ['/usr/bin/smbclient', f"//{server_ip}/shared_folder", '-U', f'{username}%jihad', '-c', 'dir']
         result = subprocess.run(command, capture_output=True, text=True)
 
         if result.returncode == 0:
