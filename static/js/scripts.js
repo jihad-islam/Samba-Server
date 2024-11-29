@@ -1,3 +1,5 @@
+let fullFileList = []; // Store the full list of files and folders
+
 // Login functionality
 document
   .getElementById("loginForm")
@@ -26,6 +28,7 @@ document
   });
 
 // Load shared files
+// Load shared files
 async function loadSharedFiles() {
   const response = await fetch("/files", { method: "GET" });
 
@@ -38,8 +41,19 @@ async function loadSharedFiles() {
   }
 
   const result = await response.json();
-  if (result.files && result.files.length > 0) {
-    result.files.forEach((file) => {
+  fullFileList = result.files || []; // Save the full list of files and folders
+
+  // Display all files initially
+  displayFiles(fullFileList);
+}
+
+// Function to display files (used for both initial and filtered file lists)
+function displayFiles(files) {
+  const fileList = document.getElementById("fileList");
+  fileList.innerHTML = ""; // Clear the list before displaying new files
+
+  if (files && files.length > 0) {
+    files.forEach((file) => {
       const listItem = document.createElement("li");
       listItem.classList.add(
         "bg-gray-700",
@@ -54,33 +68,56 @@ async function loadSharedFiles() {
         "justify-between"
       );
       listItem.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <img
-                        src="${
-                          file.type === "folder"
-                            ? "/static/icons/folder.png"
-                            : "/static/icons/file.png"
-                        }"
-                        alt="${file.type} icon"
-                        class="h-10 w-10"
-                    />
-                    <span class="text-lg font-medium truncate">${
-                      file.name
-                    }</span>
-                </div>
-            `;
+        <div class="flex items-center gap-4">
+          <img
+            src="${
+              file.type === "folder"
+                ? "/static/icons/folder.png"
+                : "/static/icons/file.png"
+            }"
+            alt="${file.type} icon"
+            class="h-10 w-10"
+          />
+          <span class="text-lg font-medium truncate text-white">${
+            file.name
+          }</span>
+        </div>
+      `;
 
       if (file.type === "file") {
-        const downloadIcon = document.createElement("img");
-        downloadIcon.src = "/static/icons/download.png"; // Assuming your download icon is at this path
-        downloadIcon.alt = "Download";
-        downloadIcon.classList.add("icon", "download-icon");
+        const downloadIcon = document.createElement("button");
+        downloadIcon.classList.add(
+          "p-2",
+          "bg-gradient-to-r",
+          "from-purple-500",
+          "via-pink-500",
+          "to-yellow-500",
+          "hover:from-yellow-500",
+          "hover:to-purple-500",
+          "rounded-full",
+          "transition"
+        );
+        downloadIcon.innerHTML = `
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 16v-8m0 8l-4-4m4 4l4-4m-7 8h10a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2z"
+            />
+          </svg>
+        `;
         downloadIcon.addEventListener("click", () => handleDownload(file.name));
-
-        listItem.appendChild(downloadIcon); // Add download icon next to the file
+        listItem.appendChild(downloadIcon);
       }
 
-      fileList.appendChild(listItem); // Append the item to the file list
+      fileList.appendChild(listItem);
     });
   } else {
     fileList.innerHTML = "<li>No files found in the shared folder.</li>";
@@ -155,6 +192,51 @@ document
       uploadMessage.style.color = "red";
     }
   });
+
+// Search functionality
+document.getElementById("searchInput")?.addEventListener("input", handleSearch);
+
+async function handleSearch() {
+  const query = document.getElementById("searchInput").value.trim();
+  if (!query) {
+    displayFiles(fullFileList); // Show all files if search input is empty
+    return;
+  }
+
+  const fileList = document.getElementById("fileList");
+  fileList.innerHTML = "<li>Searching...</li>"; // Temporary message
+
+  try {
+    // Send the query to the server
+    const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch search results");
+    }
+
+    const result = await response.json();
+
+    if (result.results && result.results.length > 0) {
+      // Display the filtered list
+      displayFiles(result.results);
+    } else {
+      fileList.innerHTML = "<li>No files found.</li>";
+    }
+  } catch (error) {
+    console.error("Error during search:", error);
+    fileList.innerHTML = "<li>Error occurred during search.</li>";
+  }
+}
+
+// Automatically load shared files when the page loads
+if (document.getElementById("fileList")) {
+  loadSharedFiles();
+}
+
+// Add Enter key functionality for search bar
+document.getElementById("searchInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") handleSearch();
+});
 
 // Logout functionality
 document

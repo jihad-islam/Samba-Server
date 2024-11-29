@@ -103,6 +103,53 @@ def download_file(filename):
     except Exception as e:
         return jsonify({'message': f"Error during download: {str(e)}"}), 500
 
+# Search functionality 
+@app.route('/search', methods=['GET'])
+def search_files():
+    if 'username' not in session:
+        return jsonify({'message': 'Unauthorized'}), 401
+
+    query = request.args.get('query', '').lower().strip()
+    print(f"Search query received: {query}")  # Debug log
+
+    try:
+        # List all items in the shared folder
+        items = os.listdir(SHARED_FOLDER_PATH)
+        search_results = []
+
+        for item in items:
+            if query in item.lower():  # Check if query is part of the filename
+                item_path = os.path.join(SHARED_FOLDER_PATH, item)
+                item_type = 'folder' if os.path.isdir(item_path) else 'file'
+                search_results.append({'name': item, 'type': item_type})
+
+        print(f"Search results: {search_results}")  # Debug log
+        return jsonify({'results': search_results})
+    except Exception as e:
+        print(f"Error during search: {str(e)}")  # Debug log
+        return jsonify({'message': f"Error during search: {str(e)}"}), 500
+
+
+@app.route('/files', methods=['GET'])
+def get_all_files():
+    if 'username' not in session:
+        return jsonify({'message': 'Unauthorized'}), 401
+
+    try:
+        items = os.listdir(SHARED_FOLDER_PATH)  # List all items in the shared folder
+        files = []
+
+        for item in items:
+            item_path = os.path.join(SHARED_FOLDER_PATH, item)
+            item_type = 'folder' if os.path.isdir(item_path) else 'file'
+            files.append({'name': item, 'type': item_type})
+
+        return jsonify({'files': files})  # Return the full list of files
+    except Exception as e:
+        return jsonify({'message': f"Error: {str(e)}"}), 500
+
+
+
 # Logout functionality
 @app.route('/logout', methods=['POST'])
 def logout():

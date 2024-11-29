@@ -20,122 +20,153 @@
     />
   </head>
   <body
-    class="bg-gradient-to-r from-black via-gray-900 to-black text-gray-200 min-h-screen flex flex-col"
+    class="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-200 min-h-screen flex flex-col overflow-x-hidden"
   >
-    <!-- Banner Section with Colorful Glow Effect -->
+    <!-- Banner Section with Enhanced Modern Design -->
     <div
-      class="banner w-full bg-gradient-to-r from-gray-800 via-gray-900 to-black shadow-xl flex justify-between items-center px-6 py-4 glow-effect"
+      class="banner w-full bg-gradient-to-br from-gray-800/70 via-black/80 to-gray-900/70 backdrop-blur-sm shadow-2xl px-6 py-5 relative flex flex-col gap-4 md:flex-row md:justify-between md:items-center border-b border-gray-700/30"
     >
-      <!-- Left Section with Username -->
-      <div class="text-lg font-medium text-white">
-        Logged in as: <span class="text-blue-400">{{ username }}</span>
+      <!-- Left Section with Username - Subtle Glow Effect -->
+      <div
+        class="text-sm md:text-lg font-medium text-white truncate hover:text-blue-300 transition-colors"
+      >
+        Logged in as:
+        <span class="text-blue-400 font-semibold">{{ username }}</span>
       </div>
 
-      <!-- Title with Gradient and Animation -->
-      <h1
-        class="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-500"
+      <!-- Title with Enhanced Gradient and Animation -->
+      <h2
+        class="absolute left-1/2 transform -translate-x-1/2 hidden md:block text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-500 animate-gradient-x truncate text-center"
       >
         Samba Server
-      </h1>
+      </h2>
 
-      <!-- Right Section with Icons -->
-      <div class="flex items-center gap-4">
-        <!-- Updated Upload Button -->
-        <label
-          for="uploadFile"
-          class="p-3 bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 hover:from-yellow-500 hover:to-purple-500 rounded-full shadow-md hover:shadow-lg transition transform hover:scale-105"
-          title="Upload File"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4m0 0l-4 4m4-4v12"
-            />
-          </svg>
-        </label>
+      <h2
+        class="md:hidden text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-500 animate-gradient-x truncate text-center"
+      >
+        Samba Server
+      </h2>
+
+      <!-- Right Section with Icons - Modern, Sleek Design -->
+      <div
+        class="flex flex-col sm:flex-wrap sm:flex-row justify-between gap-4 w-full md:w-auto md:flex-row md:items-center"
+      >
+        <!-- Search Bar Section - Glassmorphic Effect -->
         <input
-          type="file"
-          id="uploadFile"
-          style="display: none"
-          onchange="handleFileUpload(event)"
+          id="searchInput"
+          type="text"
+          placeholder="Search files..."
+          class="bg-gray-800/50 backdrop-blur-sm border border-gray-700/30 text-white text-sm rounded-xl px-4 py-2 shadow-lg outline-none focus:ring-2 focus:ring-pink-500/50 z-10 w-full sm:w-64 mb-2 sm:mb-0 transition-all duration-300 hover:bg-gray-800/70"
         />
 
-        <!-- Logout Button -->
-        <button
-          id="logoutButton"
-          class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition"
-        >
-          Logout
-        </button>
+        <div class="flex justify-between gap-4 w-full sm:w-auto">
+          <!-- Upload Button - Neon Hover Effect -->
+          <label
+            for="uploadFile"
+            class="p-3 bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-600 hover:from-yellow-600 hover:to-purple-600 rounded-full shadow-xl hover:shadow-pink-500/50 transition transform hover:scale-110 flex-grow sm:flex-grow-0 text-center group"
+            title="Upload File"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-white inline-block group-hover:rotate-6 transition-transform"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4m0 0l-4 4m4-4v12"
+              />
+            </svg>
+          </label>
+          <input
+            type="file"
+            id="uploadFile"
+            style="display: none"
+            onchange="handleFileUpload(event)"
+          />
+
+          <!-- Logout Button - Modern, Subtle Gradient -->
+          <button
+            id="logoutButton"
+            class="bg-gradient-to-r from-red-600/70 to-red-800/70 hover:from-red-700/80 hover:to-red-900/80 text-white px-6 py-3 rounded-lg font-medium text-sm transition flex-grow sm:flex-grow-0 shadow-md hover:shadow-xl"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Shared Folder Files Section with Animated Glow -->
-    <div class="container mx-auto mt-20">
+    <!-- Shared Folder Files Section -->
+    <div class="container mx-auto mt-12 md:mt-28 px-4 md:px-8">
       <div
-        class="p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg shadow-xl glow-effect"
+        class="p-4 md:p-6 bg-gradient-to-br from-gray-800/50 to-gray-700/50 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-700/30"
       >
-        <!-- <h1
-          class="text-2xl font-semibold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-500 animate-pulse"
-        >
-          Files in the Shared Folder
-        </h1> -->
-
         <!-- Upload Status Message -->
-        <div id="uploadMessage" class="text-center mb-4"></div>
+        <div
+          id="uploadMessage"
+          class="text-center mb-4 text-xs md:text-sm text-gray-300"
+        ></div>
 
         <!-- File List -->
-        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul
+          id="fileList"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+        >
           {% if items %} {% for item in items %}
           <li
-            class="bg-black bg-opacity-60 p-4 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition transform flex items-center justify-between"
+            class="bg-black/40 backdrop-blur-sm border border-gray-700/30 p-3 md:p-4 rounded-xl shadow-md hover:shadow-2xl hover:scale-105 transition transform flex flex-col justify-between h-36 md:h-44 relative overflow-hidden"
           >
+            <!-- Subtle Gradient Overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-br from-transparent via-gray-800/20 to-transparent opacity-50 pointer-events-none"
+            ></div>
+
             <!-- Icon and File/Folder Name -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 md:gap-4 relative z-10">
               <img
                 src="{{ url_for('static', filename='icons/folder.png') if item.type == 'folder' else url_for('static', filename='icons/file.png') }}"
                 alt="{{ item.type }} icon"
-                class="h-10 w-10"
+                class="h-8 w-8 md:h-10 md:w-10 filter brightness-125"
               />
-              <span class="text-lg font-medium truncate text-white"
-                >{{ item.name }}</span
+              <div
+                class="text-xs md:text-sm lg:text-base font-medium text-white truncate break-words max-w-[75%]"
+                title="{{ item.name }}"
               >
+                {{ item.name }}
+              </div>
             </div>
 
             {% if item.type == 'file' %}
             <!-- Modern Download Button -->
-            <button
-              onclick="handleDownload('{{ item.name }}')"
-              class="p-2 bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 hover:from-yellow-500 hover:to-purple-500 rounded-full transition"
-              title="Download File"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
+            <div class="mt-2 md:mt-4 flex justify-end relative z-10">
+              <button
+                onclick="handleDownload('{{ item.name }}')"
+                class="p-2 bg-gradient-to-r from-purple-600/70 via-pink-600/70 to-yellow-600/70 hover:from-yellow-600/80 hover:to-purple-600/80 rounded-full transition shadow-md hover:shadow-xl group"
+                title="Download File"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 16v-8m0 8l-4-4m4 4l4-4m-7 8h10a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2z"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 md:h-6 md:w-6 text-white group-hover:scale-110 transition-transform"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 16v-8m0 8l-4-4m4 4l4-4m-7 8h10a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2z"
+                  />
+                </svg>
+              </button>
+            </div>
             {% endif %}
           </li>
           {% endfor %} {% else %}
-          <p class="text-center text-yellow-400">
+          <p class="text-center text-yellow-400/80 text-sm md:text-base">
             {{ message or "No files found in the shared folder." }}
           </p>
           {% endif %}
