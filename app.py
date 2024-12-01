@@ -1,7 +1,7 @@
 import subprocess
 import os
 import socket
-from flask import Flask, request, jsonify, render_template, send_file, session, redirect, url_for
+from flask import Flask, request, jsonify, render_template, send_file, session, redirect, url_for, Response
 from dotenv import load_dotenv
 
 # Load environment variables from a .env file (if needed)
@@ -75,6 +75,7 @@ def shared_folders():
     except Exception as e:
         return jsonify({'message': f"Error: {str(e)}"}), 500
 
+# Upload file functionality
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -92,16 +93,34 @@ def upload_file():
     except Exception as e:
         return jsonify({'message': f"Error during upload: {str(e)}"}), 500
 
+
+# Download file functionality with Content-Length header
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
     try:
         file_path = os.path.join(SHARED_FOLDER_PATH, filename)
         if os.path.exists(file_path):
-            return send_file(file_path, as_attachment=True)
+            file_size = os.path.getsize(file_path)  # Get file size
+
+            def generate():
+                with open(file_path, 'rb') as file:
+                    while chunk := file.read(4096):  # Read file in chunks
+                        yield chunk
+
+            return Response(
+                generate(),
+                headers={
+                    'Content-Disposition': f'attachment; filename="{filename}"',
+                    'Content-Type': 'application/octet-stream',
+                    'Content-Length': file_size,  # Include file size in header
+                }
+            )
         else:
             return jsonify({'message': f'File "{filename}" not found!'}), 404
     except Exception as e:
         return jsonify({'message': f"Error during download: {str(e)}"}), 500
+
+
 
 # Search functionality 
 @app.route('/search', methods=['GET'])

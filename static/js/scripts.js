@@ -23,17 +23,16 @@ document
     messageDiv.style.color = response.ok ? "green" : "red";
 
     if (response.ok) {
-      window.location.href = result.redirect; // Redirect to shared folders page
+      window.location.href = result.redirect;
     }
   });
 
-// Load shared files
 // Load shared files
 async function loadSharedFiles() {
   const response = await fetch("/files", { method: "GET" });
 
   const fileList = document.getElementById("fileList");
-  fileList.innerHTML = ""; // Clear the list before loading new items
+  fileList.innerHTML = "";
 
   if (!response.ok) {
     fileList.innerHTML = "<li>Failed to load shared files.</li>";
@@ -41,16 +40,14 @@ async function loadSharedFiles() {
   }
 
   const result = await response.json();
-  fullFileList = result.files || []; // Save the full list of files and folders
-
-  // Display all files initially
+  fullFileList = result.files || [];
   displayFiles(fullFileList);
 }
 
-// Function to display files (used for both initial and filtered file lists)
+// Function to display files
 function displayFiles(files) {
   const fileList = document.getElementById("fileList");
-  fileList.innerHTML = ""; // Clear the list before displaying new files
+  fileList.innerHTML = "";
 
   if (files && files.length > 0) {
     files.forEach((file) => {
@@ -124,18 +121,76 @@ function displayFiles(files) {
   }
 }
 
-// Download functionality
+// Enhanced Download Progress
 async function handleDownload(filename) {
+  const progressContainer = document.getElementById(
+    "downloadProgressContainer"
+  );
+  const progressBar = document.getElementById("downloadProgress");
+  const progressText = document.getElementById("downloadPercentage");
+
+  // Reset progress container
+  progressContainer.classList.remove("hidden", "animate-fade-out");
+  progressContainer.classList.add("animate-fade-in");
+  progressBar.style.width = "0%";
+  progressBar.classList.remove("bg-green-500", "bg-red-500", "animate-pulse");
+  progressText.textContent = "Preparing download...";
+
   try {
-    const response = await fetch(`/download/${filename}`, {
-      method: "GET",
-    });
+    // Fetch the file from the server
+    const response = await fetch(`/download/${filename}`);
 
     if (!response.ok) {
-      throw new Error("Failed to download the file.");
+      throw new Error(
+        `Failed to download the file. Status: ${response.status}`
+      );
     }
 
-    const blob = await response.blob();
+    const contentLength = response.headers.get("Content-Length");
+    const total = contentLength ? parseInt(contentLength, 10) : 0;
+
+    // If `Content-Length` is not available, fallback to no progress
+    if (!total) {
+      console.warn(
+        "Content-Length not available, showing download complete only."
+      );
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Success state without progress
+      progressBar.style.width = "100%";
+      progressBar.classList.add("bg-green-500");
+      progressText.textContent = "Download complete!";
+      return;
+    }
+
+    // Handle progress with streams
+    const reader = response.body.getReader();
+    let receivedLength = 0;
+    const chunks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      chunks.push(value);
+      receivedLength += value.length;
+
+      // Calculate and update progress
+      const percent = Math.round((receivedLength / total) * 100);
+      progressBar.style.width = `${percent}%`;
+      progressBar.classList.add("animate-pulse");
+      progressText.textContent = `Downloading: ${percent}%`;
+    }
+
+    // Combine chunks into a blob and trigger download
+    const blob = new Blob(chunks);
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -143,55 +198,132 @@ async function handleDownload(filename) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Success state
+    progressBar.classList.remove("animate-pulse");
+    progressBar.classList.add("bg-green-500");
+    progressText.textContent = "Download complete!";
+
+    // Wait before hiding
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   } catch (error) {
-    alert(`Error downloading file: ${error.message}`);
+    console.error("Error during download:", error);
+
+    // Error state
+    progressBar.classList.add("bg-red-500");
+    progressText.textContent = "Download failed";
+
+    // Wait before hiding
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  } finally {
+    // Hide progress container
+    progressContainer.classList.add("animate-fade-out");
+    setTimeout(() => {
+      progressContainer.classList.add("hidden");
+      progressContainer.classList.remove("animate-fade-in", "animate-fade-out");
+      progressBar.classList.remove("bg-green-500", "bg-red-500");
+      progressBar.style.width = "0%";
+      progressText.textContent = "0%";
+    }, 500);
   }
 }
 
-// Upload functionality (single button triggers file input dialog)
-document.getElementById("uploadIcon")?.addEventListener("click", function () {
-  const fileInput = document.getElementById("uploadFile");
-  fileInput.click(); // Trigger the hidden file input dialog
+// Enhanced Upload Progress
+document.getElementById("uploadFile")?.addEventListener("change", function () {
+  const file = this.files[0];
+
+  if (!file) {
+    alert("No file selected!");
+    return;
+  }
+
+  const progressContainer = document.getElementById("uploadProgressContainer");
+  const progressBar = document.getElementById("uploadProgress");
+  const progressText = document.getElementById("uploadPercentage");
+
+  // Reset progress container
+  progressContainer.classList.remove("hidden", "animate-fade-out");
+  progressContainer.classList.add("animate-fade-in");
+  progressBar.style.width = "0%";
+  progressBar.classList.remove("bg-green-500", "bg-red-500", "animate-pulse");
+  progressText.textContent = "Preparing upload...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "/upload", true);
+
+  // Track upload progress
+  xhr.upload.onprogress = function (event) {
+    if (event.lengthComputable) {
+      const percent = Math.round((event.loaded / event.total) * 100);
+
+      progressBar.style.width = `${percent}%`;
+      progressBar.classList.add("animate-pulse");
+      progressText.textContent = `Uploading: ${percent}%`;
+
+      // Ensure progress bar stays visible
+      progressContainer.classList.remove("hidden");
+    }
+  };
+
+  // Success handler
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      progressBar.classList.remove("animate-pulse");
+      progressBar.classList.add("bg-green-500");
+      progressText.textContent = "Upload complete!";
+
+      // Reload shared files
+      loadSharedFiles();
+
+      // Keep progress visible
+      setTimeout(() => {
+        progressContainer.classList.add("animate-fade-out");
+        setTimeout(() => {
+          progressContainer.classList.add("hidden");
+          progressBar.style.width = "0%";
+          progressText.textContent = "0%";
+        }, 500);
+      }, 2000);
+    } else {
+      progressBar.classList.add("bg-red-500");
+      progressText.textContent = "Upload failed";
+
+      // Keep error visible
+      setTimeout(() => {
+        progressContainer.classList.add("animate-fade-out");
+        setTimeout(() => {
+          progressContainer.classList.add("hidden");
+          progressBar.style.width = "0%";
+          progressText.textContent = "0%";
+        }, 500);
+      }, 2000);
+    }
+  };
+
+  // Error handler
+  xhr.onerror = function () {
+    progressBar.classList.add("bg-red-500");
+    progressText.textContent = "Upload error";
+
+    // Keep error visible
+    setTimeout(() => {
+      progressContainer.classList.add("animate-fade-out");
+      setTimeout(() => {
+        progressContainer.classList.add("hidden");
+        progressBar.style.width = "0%";
+        progressText.textContent = "0%";
+      }, 500);
+    }, 2000);
+  };
+
+  // Send the request
+  xhr.send(formData);
 });
 
-// Upload file when user selects a file
-document
-  .getElementById("uploadFile")
-  ?.addEventListener("change", async function () {
-    const file = this.files[0]; // Get the selected file
-
-    if (!file) {
-      alert("No file selected!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const uploadMessage = document.getElementById("uploadMessage");
-    uploadMessage.textContent = "Uploading file...";
-    uploadMessage.style.color = "orange";
-
-    try {
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        uploadMessage.textContent = result.message;
-        uploadMessage.style.color = "green";
-        loadSharedFiles(); // Reload the file list after successful upload
-      } else {
-        uploadMessage.textContent = result.message || "Error uploading file.";
-        uploadMessage.style.color = "red";
-      }
-    } catch (error) {
-      uploadMessage.textContent = `Error during file upload: ${error.message}`;
-      uploadMessage.style.color = "red";
-    }
-  });
+// Rest of the existing code remains the same...
 
 // Search functionality
 document.getElementById("searchInput")?.addEventListener("input", handleSearch);
@@ -199,29 +331,22 @@ document.getElementById("searchInput")?.addEventListener("input", handleSearch);
 async function handleSearch() {
   const query = document.getElementById("searchInput").value.trim();
   if (!query) {
-    displayFiles(fullFileList); // Show all files if search input is empty
+    displayFiles(fullFileList);
     return;
   }
 
   const fileList = document.getElementById("fileList");
-  fileList.innerHTML = "<li>Searching...</li>"; // Temporary message
+  fileList.innerHTML = "<li>Searching...</li>";
 
   try {
-    // Send the query to the server
     const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
 
     if (!response.ok) {
-      throw new Error("Failed to fetch search results");
+      throw new Error("Failed to fetch search results.");
     }
 
     const result = await response.json();
-
-    if (result.results && result.results.length > 0) {
-      // Display the filtered list
-      displayFiles(result.results);
-    } else {
-      fileList.innerHTML = "<li>No files found.</li>";
-    }
+    displayFiles(result.results);
   } catch (error) {
     console.error("Error during search:", error);
     fileList.innerHTML = "<li>Error occurred during search.</li>";
@@ -234,7 +359,7 @@ if (document.getElementById("fileList")) {
 }
 
 // Add Enter key functionality for search bar
-document.getElementById("searchInput").addEventListener("keydown", (e) => {
+document.getElementById("searchInput")?.addEventListener("keydown", (e) => {
   if (e.key === "Enter") handleSearch();
 });
 
@@ -243,12 +368,10 @@ document
   .getElementById("logoutButton")
   ?.addEventListener("click", async function () {
     try {
-      // Send a POST request to the logout endpoint
       const response = await fetch("/logout", { method: "POST" });
 
       if (response.ok) {
-        // Redirect to login page after logout
-        window.location.href = "/"; // Redirect to the login page
+        window.location.href = "/";
       } else {
         alert("Failed to logout");
       }
@@ -256,8 +379,3 @@ document
       alert("Error logging out: " + error.message);
     }
   });
-
-// Automatically load shared files when the page loads
-if (document.getElementById("fileList")) {
-  loadSharedFiles();
-}

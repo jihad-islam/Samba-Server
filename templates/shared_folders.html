@@ -22,11 +22,11 @@
   <body
     class="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-gray-200 min-h-screen flex flex-col overflow-x-hidden"
   >
-    <!-- Banner Section with Enhanced Modern Design -->
+    <!-- Banner Section -->
     <div
       class="banner w-full bg-gradient-to-br from-gray-800/70 via-black/80 to-gray-900/70 backdrop-blur-sm shadow-2xl px-6 py-5 relative flex flex-col gap-4 md:flex-row md:justify-between md:items-center border-b border-gray-700/30"
     >
-      <!-- Left Section with Username - Subtle Glow Effect -->
+      <!-- Left Section with Username -->
       <div
         class="text-sm md:text-lg font-medium text-white truncate hover:text-blue-300 transition-colors"
       >
@@ -34,7 +34,7 @@
         <span class="text-blue-400 font-semibold">{{ username }}</span>
       </div>
 
-      <!-- Title with Enhanced Gradient and Animation -->
+      <!-- Title -->
       <h2
         class="absolute left-1/2 transform -translate-x-1/2 hidden md:block text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-500 animate-gradient-x truncate text-center"
       >
@@ -47,11 +47,11 @@
         Samba Server
       </h2>
 
-      <!-- Right Section with Icons - Modern, Sleek Design -->
+      <!-- Right Section -->
       <div
         class="flex flex-col sm:flex-wrap sm:flex-row justify-between gap-4 w-full md:w-auto md:flex-row md:items-center"
       >
-        <!-- Search Bar Section - Glassmorphic Effect -->
+        <!-- Search Bar -->
         <input
           id="searchInput"
           type="text"
@@ -60,7 +60,7 @@
         />
 
         <div class="flex justify-between gap-4 w-full sm:w-auto">
-          <!-- Upload Button - Neon Hover Effect -->
+          <!-- Upload Button -->
           <label
             for="uploadFile"
             class="p-3 bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-600 hover:from-yellow-600 hover:to-purple-600 rounded-full shadow-xl hover:shadow-pink-500/50 transition transform hover:scale-110 flex-grow sm:flex-grow-0 text-center group"
@@ -88,7 +88,7 @@
             onchange="handleFileUpload(event)"
           />
 
-          <!-- Logout Button - Modern, Subtle Gradient -->
+          <!-- Logout Button -->
           <button
             id="logoutButton"
             class="bg-gradient-to-r from-red-600/70 to-red-800/70 hover:from-red-700/80 hover:to-red-900/80 text-white px-6 py-3 rounded-lg font-medium text-sm transition flex-grow sm:flex-grow-0 shadow-md hover:shadow-xl"
@@ -96,6 +96,48 @@
             Logout
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <!-- Upload Progress Bar -->
+    <div
+      id="uploadProgressContainer"
+      class="fixed bottom-5 right-5 bg-gray-900/90 rounded-lg shadow-lg flex items-center gap-4 px-4 py-2 hidden z-50"
+    >
+      <div class="flex-1">
+        <div class="h-2 bg-gray-700 rounded">
+          <div
+            id="uploadProgress"
+            class="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 rounded transition-all"
+            style="width: 0%"
+          ></div>
+        </div>
+        <p class="text-xs text-gray-300 mt-1 text-center" id="uploadPercentage">
+          0%
+        </p>
+      </div>
+    </div>
+
+    <!-- Download Progress Bar -->
+    <div
+      id="downloadProgressContainer"
+      class="fixed bottom-5 right-5 bg-gray-900/90 rounded-lg shadow-lg flex items-center gap-4 px-4 py-2 hidden z-50"
+    >
+      <div class="flex-1">
+        <div class="h-2 bg-gray-700 rounded">
+          <div
+            id="downloadProgress"
+            class="h-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 rounded transition-all"
+            style="width: 0%"
+          ></div>
+        </div>
+        <p
+          class="text-xs text-gray-300 mt-1 text-center"
+          id="downloadPercentage"
+        >
+          0%
+        </p>
       </div>
     </div>
 
